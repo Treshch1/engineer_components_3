@@ -96,7 +96,7 @@ namespace IIG.CoSFE.DatabaseUtils
         }
 
         [Test]
-        public void CheckCreationTheSameLogin()
+        public void CheckCreationExistingLogin()
         {
             // Arrange
             string password = ph.HashPassword("somehash1");

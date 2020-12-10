@@ -23,6 +23,7 @@ namespace engineer_3_labs
             Assert.AreNotEqual(pw, hash);
         }
 
+
         [Test]
         public void CheckHashSuccessfulVerification()
         {
