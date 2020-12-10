@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 
 
@@ -19,7 +18,7 @@ namespace IIG.PasswordHashingUtils
 
 
             // Assert
-            Assert.AreNotEqual(pw, hash);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
@@ -32,7 +31,7 @@ namespace IIG.PasswordHashingUtils
             string hash = PasswordHasher.GetHash(pw, adlerMod32: 2147483648); // 2,147,483,647 is boundary value
 
             // Assert
-            Assert.AreNotEqual(pw, hash);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
@@ -45,7 +44,7 @@ namespace IIG.PasswordHashingUtils
             string hash = PasswordHasher.GetHash(pw, "some_salt");
 
             // Assert
-            Assert.AreNotEqual(pw, hash);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
@@ -58,7 +57,7 @@ namespace IIG.PasswordHashingUtils
             string hash = PasswordHasher.GetHash(pw, adlerMod32: 0);
 
             // Assert
-            Assert.AreNotEqual(pw, hash);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
@@ -69,9 +68,9 @@ namespace IIG.PasswordHashingUtils
 
             // Act 
             string hash = PasswordHasher.GetHash(pw, "salt", 0);
-            Console.WriteLine(hash.Length);
+
             // Assert
-            Assert.AreEqual(hash.Length, 1);
+            Assert.AreEqual(hash.Length, 64);
         }
     }
 }
