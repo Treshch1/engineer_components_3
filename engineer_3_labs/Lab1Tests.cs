@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Microsoft.AspNet.Identity;
+using IIG.PasswordHashingUtils;
 
 
 namespace engineer_3_labs
@@ -8,8 +8,6 @@ namespace engineer_3_labs
     [TestFixture]
     public class Tests1
     {
-        PasswordHasher ph = new PasswordHasher();
-
         [Test]
         public void CheckHashIsGenated()
         {
@@ -17,89 +15,117 @@ namespace engineer_3_labs
             string pw = "qqweqqwe";
 
              // Act 
-            string hash = ph.HashPassword(pw);
+            string hash = PasswordHasher.GetHash(pw);
 
             // Assert
-            Assert.AreNotEqual(pw, hash);
-        }
-
-
-        [Test]
-        public void CheckHashSuccessfulVerification()
-        {
-            // Arrange
-            string pw = "qqweqqwe";
-            PasswordVerificationResult result;
-
-            // Act 
-            string hash = ph.HashPassword(pw);
-            result = ph.VerifyHashedPassword(hash, pw);
-
-            // Assert
-            Assert.AreEqual(result, PasswordVerificationResult.Success);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
-        public void CheckHashUnsuccessfulVerification()
-        {
-            // Arrange
-            string pw1 = "qqweqqwe";
-            string pw2 = "Qqwe1123";
-
-            PasswordVerificationResult result;
-
-            // Act 
-            string hash = ph.HashPassword(pw1);
-            result = ph.VerifyHashedPassword(hash, pw2);
-
-            // Assert
-            Assert.AreEqual(result, PasswordVerificationResult.Failed);
-        }
-
-        [Test]
-        public void CheckHashWithEmptyString()
+        public void CheckHashWithEmptyStringPassword()
         {
             // Arrange
             string pw = "";
-            PasswordVerificationResult result;
 
             // Act 
-            string hash = ph.HashPassword(pw);
-            result = ph.VerifyHashedPassword(hash, pw);
+            string hash = PasswordHasher.GetHash(pw);
 
             // Assert
-            Assert.AreEqual(result, PasswordVerificationResult.Success);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
-        public void CheckHashWithSpecialSymbols()
+        public void CheckHashWithSpecialSymbolsPassword()
         {
             // Arrange
             string pw = "!@#$%^&*()";
-            PasswordVerificationResult result;
 
             // Act 
-            string hash = ph.HashPassword(pw);
-            result = ph.VerifyHashedPassword(hash, pw);
+            string hash = PasswordHasher.GetHash(pw);
 
             // Assert
-            Assert.AreEqual(result, PasswordVerificationResult.Success);
+            Assert.AreEqual(hash.Length, 64);
         }
 
         [Test]
-        public void CheckHashWithNull()
+        public void CheckHashWithNullPassword()
         {
             // Arrange
             string pw = null;
 
             // Act 
             try {
-                string hash = ph.HashPassword(pw);
+                string hash = PasswordHasher.GetHash(pw);
                 Assert.Fail();
             } catch (ArgumentNullException e) {
                 // Assert
                 Assert.Pass();
             }
+        }
+
+        [Test]
+        public void CheckHashWithSalt()
+        {
+            // Arrange
+            string pw = "qqweqqwe";
+
+            // Act 
+            string hash = PasswordHasher.GetHash(pw, salt: "somesalt");
+
+            // Assert
+            Assert.AreEqual(hash.Length, 64);
+        }
+
+        [Test]
+        public void CheckHashWithAdler()
+        {
+            // Arrange
+            string pw = "qqweqqwe";
+
+            // Act 
+            string hash = PasswordHasher.GetHash(pw, adlerMod32: 1);
+
+            // Assert
+            Assert.AreEqual(hash.Length, 64);
+        }
+
+        [Test]
+        public void CheckHashWithZeroAdler()
+        {
+            // Arrange
+            string pw = "qqweqqwe";
+
+            // Act 
+            string hash = PasswordHasher.GetHash(pw, adlerMod32: 0);
+
+            // Assert
+            Assert.AreEqual(hash.Length, 64);
+        }
+
+        [Test]
+        public void CheckHashWithAdlerMoreThanAllowed()
+        {
+            // Arrange
+            string pw = "qqweqqwe";
+
+            // Act 
+            string hash = PasswordHasher.GetHash(pw, adlerMod32: 2147483648); // 2,147,483,647 is boundary value
+
+            // Assert
+            Assert.AreEqual(hash.Length, 64);
+        }
+
+        [Test]
+        public void CheckHashWithAdlerAndSalt()
+        {
+            // Arrange
+            string pw = "qqweqqwe";
+
+            // Act 
+            string hash = PasswordHasher.GetHash(pw, salt: "anything", adlerMod32: 45);
+
+            // Assert
+            Assert.AreEqual(hash.Length, 64);
         }
     }
 }
